@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eval Forge</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="frame">
+  <aside class="rail">
+    <div class="wordmark">
+      <span class="wordmark-eval">eval</span><span class="wordmark-forge">forge</span>
+    </div>
+    <nav class="railnav">
+      <button class="railbtn active" data-view="overview">Overview</button>
+      <button class="railbtn" data-view="ingest">Ingest</button>
+      <button class="railbtn" data-view="clusters">Clusters</button>
+      <button class="railbtn" data-view="review">Review</button>
+      <button class="railbtn" data-view="dataset">Dataset</button>
+      <button class="railbtn" data-view="regression">Regression</button>
+    </nav>
+    <div class="railfoot">
+      <label for="apiBase">API endpoint</label>
+      <input id="apiBase" type="text" value="http://localhost:8000" spellcheck="false">
+    </div>
+  </aside>
+
+  <main class="stage">
+
+    <section id="view-overview" class="view active">
+      <header class="viewhead">
+        <h1>Production Logs → Failure Mining → Pattern Discovery → Candidate Eval Cases → Human Review → Versioned Eval Dataset → Regression Testing</h1>
+      </header>
+      <div class="metricgrid" id="metricGrid"><!-- populated by app.js --></div>
+      <div class="panelrow">
+        <div class="panel">
+          <h2>Failure signal breakdown</h2>
+          <p class="panelnote">Automated triage flags (deterministic + heuristic) — not verdicts.</p>
+          <div id="signalBreakdown" class="barlist"></div>
+        </div>
+        <div class="panel">
+          <h2>Top failure categories</h2>
+          <p class="panelnote">Proposed categories from generated candidates, unreviewed. See the Dataset view for human-approved category distribution.</p>
+          <div id="categoryBreakdown" class="barlist"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-ingest" class="view">
+      <header class="viewhead"><h1>Ingest production logs</h1></header>
+      <div class="panel narrow">
+        <p class="hint">Accepts JSON (array of records) or JSONL. Each record runs through validation, sensitive-data redaction, dedup, failure-signal extraction, clustering, and candidate generation immediately.</p>
+        <input type="file" id="fileInput" accept=".json,.jsonl">
+        <button id="uploadBtn" class="primary">Ingest file</button>
+        <pre id="ingestResult" class="resultblock"></pre>
+      </div>
+    </section>
+
+    <section id="view-clusters" class="view">
+      <header class="viewhead"><h1>Discovered clusters</h1></header>
+      <div id="clusterList" class="clusterlist"></div>
+    </section>
+
+    <section id="view-review" class="view">
+      <header class="viewhead">
+        <h1>Human review queue</h1>
+        <div class="filterrow">
+          <button class="chip active" data-status="pending">Pending</button>
+          <button class="chip" data-status="approved">Approved</button>
+          <button class="chip" data-status="rejected">Rejected</button>
+        </div>
+      </header>
+      <p class="disclaimer">Categories and expected outputs shown as "proposed" come from automated signals or an AI generator — they are triage suggestions, not verdicts. Only the fields shown after human approval are canonical.</p>
+      <div id="candidateList" class="candidatelist"></div>
+    </section>
+
+    <section id="view-dataset" class="view">
+      <header class="viewhead">
+        <h1>Versioned evaluation dataset</h1>
+        <button id="createVersionBtn" class="primary">Create new version from approved cases</button>
+      </header>
+      <p class="disclaimer">Every case in a version was human-approved. Category and provenance counts here reflect the reviewer's final fields, never a system proposal.</p>
+      <pre id="versionResult" class="resultblock"></pre>
+      <div id="versionList" class="versionlist"></div>
+    </section>
+
+    <section id="view-regression" class="view">
+      <header class="viewhead">
+        <h1>Regression testing</h1>
+        <button id="runRegressionBtn" class="primary">Run regression against latest dataset version</button>
+      </header>
+      <div id="regressionResult"></div>
+      <div id="regressionHistory" class="regressionhistory"></div>
+    </section>
+
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
